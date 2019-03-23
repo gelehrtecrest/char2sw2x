@@ -47,7 +47,7 @@
 	const skill_regexp = /\[.+\]([^:]+) : ([^:]+) :/g;
 	data.skill_name = [];
 	data.skill_ex = [];
-	const weapon_regexp =/[\d]+[\s]+.+[\s]+[\d]+[\s]+[\d]+[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]\[(.+)\][\s]+(.+)[\s]+\//g;
+	const weapon_regexp =/[\d]+[\s]+.+[\s]+[\d]+[\s]+[\d]+[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]\[.+\][\s]+(.+)[\s]+\//g;
 	data.weapon_hit = [];
 	data.weapon_k = [];
 	data.weapon_c = [];

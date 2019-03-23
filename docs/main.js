@@ -4,18 +4,18 @@
 	const FLAG_DATA = 2;
 	const FLAG_ABILITY = 3;
 	
-	var common = {};
+	var data = {};
+	data.common = {};
 	const name_regexp = /キャラクター名：(.+)/g;
-	common.name = "";
-	common.size = 1;
-	var detail = {};
-	// detailの階層構造
-	var resource = {}
-	resource.HP = 0;
-	resource.MP = 0;
-	resource.zoro = 0;
-	resource.longing = 0;
-	detail.resource = resource;
+	data.common.name = "";
+	data.common.size = 1;
+	// dataの階層構造
+	data.resource = {}
+	const longing_regexp = /穢れ度：(.+)/g;
+	data.resource.HP = 0;
+	data.resource.MP = 0;
+	data.resource.zoro = 0;
+	data.resource.longing = 0;
 
 	$('#inputFile').on("change", function() {
 		var file = this.files[0];
@@ -41,17 +41,23 @@
 					let match;
 					let matches = []
 					while ((match = name_regexp.exec(lineArr[i]))!== null) {
-						common.name = match[1];
+						data.common.name = match[1];
+					}
+				} else if(flag == FLAG_DATA){
+					let match;
+					let matches = []
+					while ((match = longing_regexp.exec(lineArr[i]))!== null) {
+						data.resource.longing = match[1];
 					}
 				}
 			}
-			generate_xml(common, detail);
+			generate_xml(data);
 		}
 	});
 });
 
 var content = null
-function generate_xml(common, detail){
+function generate_xml(data){
 
 	content = "";
 	//init
@@ -62,9 +68,17 @@ function generate_xml(common, detail){
 	content += '      <data type="image" name="imageIdentifier"></data>\n';
 	content += '    </data>\n';
 	content += '    <data name="common">\n';
-	content += '      <data name="name">'+common.name+'</data>\n';
+	content += '      <data name="name">' + data.common.name + '</data>\n';
 	content += '      <data name="size">1</data>\n';
 	content += '    </data>\n';
+        content += '    <data name="detail">\n'
+	content += '      <data name="リソース">\n';
+        content += '        <data type="numberResource" currentValue="0" name="HP">0</data>\n';
+        content += '        <data type="numberResource" currentValue="0" name="MP">0</data>\n';
+        content += '        <data type="numberResource" currentValue="0" name="1ゾロ">100</data>\n';
+        content += '        <data type="numberResource" currentValue="'+ data.resource.longing +'" name="穢れ度">100</data>\n';
+        content += '      </data>\n';
+       content += '     </data>\n';
 	content += '  </data>\n';
 	//chat-palette
 	content += '  <chat-palette dicebot="SwordWorld2_0">SW2.0・SW2.5判定例\n';
@@ -162,6 +176,7 @@ function generate_xml(common, detail){
         content += '2d6+{レンジャー}+{知力ボーナス} レンジャー罠回避判定\n';
         content += '  </chat-palette>\n';
         content += '</character>';
+	console.log(content);
 }
 
 function handleDownload() {

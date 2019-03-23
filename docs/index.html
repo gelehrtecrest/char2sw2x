@@ -1,8 +1,14 @@
 <html>
 	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta description="SW2.0/SW2.5キャラクター保管庫のデータをユドナリウムのキャラに変換するアプリです">
 		<title>SW2.0/SW2.5キャラクター保管庫のデータをユドナリウムのキャラに</title>
 		<script src="./jquery-3.3.1.min.js"></script>
 		<script type="text/javascript" src="./main.js" charset="uft-8"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-101529000-14"></script>
 <script>
@@ -14,19 +20,33 @@
 </script>
 	</head>
 	<body>
-		<h3>使い方</h3>
-		<ul>
-			<li>SW2.0キャラクター保管庫から、テキストをデータ出力してください。保管庫はこちらです。<a href="https://charasheet.vampire-blood.net/swordworld2_pc_making.html">https://charasheet.vampire-blood.net/swordworld2_pc_making.html</a></li>
-			<li>テキストデータはUTF-8で保存してください。WindowsPCではサクラエディタなどを使うと楽だと思います。</li>
-			<li>テキストファイルをこのサイトでアップロードしてください。</li>
-			<li>アップロード後、ダウンロードボタンを押してください。XMLファイルがダウンロードされるはずです。</li>
-			<li>XMLファイルをユドナリウム(Udonarium)にドラック&ドロップすると、キャラが作成されます。</li>
-		</ul>
-		<input type="file" id="inputFile">
-		<a id="download" href="#" download="data.xml" onclick="handleDownload()">ダウンロード</a>
-		<hr />
-		<p>広告</p>
-		<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<div class="jumbotron">
+			<div class="container">
+				<h1 class="lang" language="ja">SW2.0/SW2.5キャラクター保管庫のデータをユドナリウムのキャラに</h1>
+			</div>
+		</div>
+		<div class="container">
+			<h3>使い方</h3>
+			<ul>
+				<li>SW2.0キャラクター保管庫から、テキストをデータ出力してください。保管庫はこちらです。<a href="https://charasheet.vampire-blood.net/swordworld2_pc_making.html">https://charasheet.vampire-blood.net/swordworld2_pc_making.html</a></li>
+				<li>テキストデータはUTF-8で保存してください。WindowsPCではサクラエディタなどを使うと楽だと思います。</li>
+				<li>テキストファイルをこのサイトでアップロードしてください。</li>
+				<li>アップロード後、ダウンロードボタンを押してください。XMLファイルがダウンロードされるはずです。</li>
+				<li>XMLファイルをユドナリウム(Udonarium)にドラック&ドロップすると、キャラが作成されます。</li>
+			</ul>
+		</div>
+		<div class="container">
+			<div class="alert alert-success lang" language="ja">Step1.(必須) SW2.0キャラクタ保管庫からデータ出力したテキストをUTF8でアップロード</div>
+			<input type="file" id="inputFile">
+		</div>
+		<div class="container">
+			<div class="alert alert-success lang" language="ja">Step2.(必須) ダウンロードボタンからXMLファイルをダウンロードして、ユドナリウムにアップロード</div>
+			<a id="download" href="#" download="data.xml" class="btn btn-primary" onclick="handleDownload()">ダウンロード</a>
+		</div>
+		<div class="container">
+			<hr />
+			<p>広告</p>
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <!-- char2sw2x レスポンシブル -->
 <ins class="adsbygoogle"
      style="display:block"
@@ -37,6 +57,7 @@
 <script>
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-		</hr>
+			</hr>
+		</div>
 	</body>
 </html>

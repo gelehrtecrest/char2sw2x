@@ -36,7 +36,11 @@
 	data.abilityplus.vit = 0;
 	data.abilityplus.int = 0;
 	data.abilityplus.mnd = 0;
-
+	const lv_regexp = /([^／\s]+)：(\d+)[\s]+Lv/g;
+	const lv1_regexp = /([^／\s]+)[\s]+(\d+)[\s]+Lv/g;
+	const lv2_regexp = /([^／\s]+)[\s]+(\d+)[\s]+Lv[\s]+／[\s]+([^／\s]+)[\s]+(\d+)[\s]+Lv/g;
+	data.lv_name = [];
+	data.lv_value = [];
 
 	$('#inputFile').on("change", function() {
 		var file = this.files[0];
@@ -65,19 +69,16 @@
 
 				if(flag == FLAG_INIT){
 					let match;
-					let matches = []
 					while ((match = name_regexp.exec(lineArr[i]))!== null) {
 						data.common.name = match[1];
 					}
 				} else if(flag == FLAG_DATA){
 					let match;
-					let matches = []
 					while ((match = longing_regexp.exec(lineArr[i]))!== null) {
 						data.resource.longing = match[1];
 					}
 				} else if(flag == FLAG_ABILITY){
 					let match;
-					let matches = []
 					while ((match = ability_regexp.exec(lineArr[i]))!== null) {
 						data.ability.dex = match[1];
 						data.ability.agi = match[2];
@@ -96,14 +97,36 @@
 					}
 				} else if(flag == FLAG_HPMP){
 					let match;
-					let matches = []
 					while ((match = hpmp_regexp.exec(lineArr[i]))!== null) {
 						data.resource.rehp = match[1];
 						data.resource.remp = match[2];
 						data.resource.hp = match[3];
 						data.resource.mp = match[4];
 					}
+				} else if(flag == FLAG_LV){
+					let match;
+					while ((match = lv_regexp.exec(lineArr[i]))!== null) {
+						data.lv_name.push(match[1]);
+						data.lv_value.push(match[2]);
+					}
+					while ((match = lv2_regexp.exec(lineArr[i]))!== null) {
+						if(data.lv_name.indexOf(match[1]) == -1){
+							data.lv_name.push(match[1]);
+							data.lv_value.push(match[2]);
+						}
+						if(data.lv_name.indexOf(match[3]) == -1){
+							data.lv_name.push(match[3]);
+							data.lv_value.push(match[4]);
+						}
+					}
+					while ((match = lv1_regexp.exec(lineArr[i]))!== null) {
+						if(data.lv_name.indexOf(match[1]) == -1){
+							data.lv_name.push(match[1]);
+							data.lv_value.push(match[2]);
+						}
+					}
 				}
+
 
 			}
 			generate_xml(data);
@@ -153,6 +176,11 @@ function generate_xml(data){
         content += '        <data name="知力ボーナス">'+ data.abilityplus.int +'</data>\n';
         content += '        <data name="精神ボーナス">'+ data.abilityplus.mnd +'</data>\n';
         content += '      </data>\n';
+        content += '      <data name="技能・経験点">\n';
+        for(var i=0 ; data.lv_name.length > i; i++){
+	content += '        <data name="'+ data.lv_name[i]+'">'+ data.lv_value[i] +'</data>\n';
+        }
+	content += '      </data>\n';
         content += '    </data>\n';
 	content += '  </data>\n';
 	//chat-palette

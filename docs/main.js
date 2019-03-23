@@ -6,7 +6,7 @@
 	const FLAG_HPMP = 4;
 	const FLAG_LV = 5;
 	const FLAG_SKILL = 6;
-	const FLAG_EQ = 7;
+	const FLAG_WEAPON = 7;
 
 	var data = {};
 	data.common = {};
@@ -47,6 +47,12 @@
 	const skill_regexp = /\[.+\]([^:]+) : ([^:]+) :/g;
 	data.skill_name = [];
 	data.skill_ex = [];
+	const weapon_regexp =/[\d]+[\s]+.+[\s]+[\d]+[\s]+[\d]+[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]\[(.+)\][\s]+(.+)[\s]+\//g;
+	data.weapon_hit = [];
+	data.weapon_k = [];
+	data.weapon_c = [];
+	data.weapon_add = [];
+	data.weapon_name = [];
 	
 	$('#inputFile').on("change", function() {
 		var file = this.files[0];
@@ -73,9 +79,10 @@
 					flag = FLAG_LV;
 				} else if(lineArr[i].indexOf('戦闘特技・値') > -1){
 					flag = FLAG_SKILL;
-				} else if(lineArr[i].indexOf('■装備■') > -1){
-                                        flag = FLAG_EQ;
+				} else if(lineArr[i].indexOf('・武器') > -1){
+                                        flag = FLAG_WEAPON;
 				}
+
 
 
 
@@ -144,12 +151,20 @@
 						skill_flag = 2;
 					} else {
 						let match;
-						console.log(lineArr[i]);
 						while ((match = skill_regexp.exec(lineArr[i]))!== null) {
 							data.skill_name.push(match[1]);
 							data.skill_ex.push(match[2]);
 						}
-						console.log(data.skill_name);
+					}
+				} else if(flag == FLAG_WEAPON){
+					let match;
+					console.log(lineArr[i]);
+					while ((match = weapon_regexp.exec(lineArr[i]))!== null) {
+						data.weapon_hit.push(match[1]);
+						data.weapon_k.push(match[2]);
+						data.weapon_c.push(match[3]);
+						data.weapon_add.push(match[4]);
+						data.weapon_name.push(match[5]);
 					}
 				}
 
@@ -212,6 +227,15 @@ function generate_xml(data){
 	content += '        <data name="'+ data.skill_name[i]+'">'+ data.skill_ex[i] +'</data>\n';
         }
 	content += '      </data>\n';
+	for(var i=1 ; data.weapon_name.length >= i; i++){
+	content += '      <data name="武器'+ i +'">\n';
+        content += '        <data name="武器'+ i +'名前">'+ data.weapon_name[i-1] + '</data>\n';
+	content += '        <data name="武器'+ i +'命中">'+ data.weapon_hit[i-1] + '</data>\n';
+	content += '        <data name="武器'+ i +'威力">'+ data.weapon_k[i-1] + '</data>\n';
+	content += '        <data name="武器'+ i +'クリティカル">'+ data.weapon_c[i-1] + '</data>\n';
+	content += '        <data name="武器'+ i +'ダメージボーナス">'+ data.weapon_add[i-1] + '</data>\n';
+	content += '      </data>\n';
+	}
         content += '    </data>\n';
 	content += '  </data>\n';
 	//chat-palette
@@ -219,7 +243,7 @@ function generate_xml(data){
         content += '// 武器1命中判定\n';
         content += '2d6+{武器1命中力}+{器用度ボーナス} {武器1名前}\n';
         content += '// 武器1威力判定\n';
-        content += 'k{武器1威力}@{武器1クリティカル} {武器1名前}\n';
+        content += 'k{武器1威力}+{武器1ダメージボーナス}@{武器1クリティカル} {武器1名前}\n';
         content += '\n';
         content += '// 抵抗\n';
 	content += '2d6+{生命抵抗} 生命抵抗\n';
@@ -313,7 +337,6 @@ function generate_xml(data){
         content += '2d6+{レンジャー}+{知力ボーナス} レンジャー罠回避判定\n';
         content += '  </chat-palette>\n';
         content += '</character>';
-	console.log(content);
 }
 
 function handleDownload() {

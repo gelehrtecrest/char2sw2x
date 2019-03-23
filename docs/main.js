@@ -3,7 +3,9 @@
 	const FLAG_INIT = 1;
 	const FLAG_DATA = 2;
 	const FLAG_ABILITY = 3;
-	
+	const FLAG_HPMP = 4;
+	const FLAG_LV = 5;
+
 	var data = {};
 	data.common = {};
 	const name_regexp = /キャラクター名：(.+)/g;
@@ -12,9 +14,11 @@
 	// dataの階層構造
 	data.resource = {}
 	const longing_regexp = /穢れ度：(.+)/g;
-	data.resource.HP = 0;
-	data.resource.MP = 0;
-	data.resource.zoro = 0;
+	const hpmp_regexp = /(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)/g;
+	data.resource.rehp = 0;
+	data.resource.remp = 0;
+	data.resource.hp = 0;
+	data.resource.mp = 0;
 	data.resource.longing = 0;
 
 	$('#inputFile').on("change", function() {
@@ -36,7 +40,12 @@
 					flag = FLAG_DATA;
 				} else if(lineArr[i].indexOf('能力値') > -1){
 					flag = FLAG_ABILITY;
+				} else if(lineArr[i].indexOf('抵抗') > -1 && lineArr[i].indexOf('HP') > -1 && lineArr[i].indexOf('MP') > -1){
+					flag = FLAG_HPMP;
+				} else if(lineArr[i].indexOf('レベル・技能') > -1){
+					flag = FLAG_LV;
 				}
+
 				if(flag == FLAG_INIT){
 					let match;
 					let matches = []
@@ -49,7 +58,17 @@
 					while ((match = longing_regexp.exec(lineArr[i]))!== null) {
 						data.resource.longing = match[1];
 					}
+				} else if(flag == FLAG_HPMP){
+					let match;
+					let matches = []
+					while ((match = hpmp_regexp.exec(lineArr[i]))!== null) {
+						data.resource.rehp = match[1];
+						data.resource.remp = match[2];
+						data.resource.hp = match[3];
+						data.resource.mp = match[4];
+					}
 				}
+
 			}
 			generate_xml(data);
 		}
@@ -73,10 +92,14 @@ function generate_xml(data){
 	content += '    </data>\n';
         content += '    <data name="detail">\n'
 	content += '      <data name="リソース">\n';
-        content += '        <data type="numberResource" currentValue="0" name="HP">0</data>\n';
-        content += '        <data type="numberResource" currentValue="0" name="MP">0</data>\n';
+        content += '        <data type="numberResource" currentValue="'+ data.resource.hp + '" name="HP">'+ data.resource.hp +'</data>\n';
+        content += '        <data type="numberResource" currentValue="'+ data.resource.mp + '" name="MP">'+ data.resource.mp +'</data>\n';
         content += '        <data type="numberResource" currentValue="0" name="1ゾロ">100</data>\n';
         content += '        <data type="numberResource" currentValue="'+ data.resource.longing +'" name="穢れ度">100</data>\n';
+        content += '      </data>\n';
+        content += '      <data name="抵抗">\n';
+        content += '        <data name="生命抵抗">'+ data.resource.rehp +'</data>\n';
+        content += '        <data name="精神抵抗">'+ data.resource.remp +'</data>\n';
         content += '      </data>\n';
        content += '     </data>\n';
 	content += '  </data>\n';
@@ -87,6 +110,9 @@ function generate_xml(data){
         content += '// 武器1威力判定\n';
         content += 'k{武器1威力}@{武器1クリティカル} {武器1名前}\n';
         content += '\n';
+        content += '// 抵抗\n';
+	content += '2d6+{生命抵抗} 生命抵抗\n';
+	content += '2d6+{精神抵抗} 精神抵抗\n';
         content += '// 隠蔽判定\n';
         content += '2d6+{スカウト}+{器用度ボーナス} スカウト隠蔽判定\n';
         content += '2d6+{レンジャー}+{器用度ボーナス} レンジャー隠蔽判定\n';

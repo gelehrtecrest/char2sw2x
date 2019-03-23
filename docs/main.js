@@ -5,6 +5,8 @@
 	const FLAG_ABILITY = 3;
 	const FLAG_HPMP = 4;
 	const FLAG_LV = 5;
+	const FLAG_SKILL = 6;
+	const FLAG_EQ = 7;
 
 	var data = {};
 	data.common = {};
@@ -41,7 +43,11 @@
 	const lv2_regexp = /([^／\s]+)[\s]+(\d+)[\s]+Lv[\s]+／[\s]+([^／\s]+)[\s]+(\d+)[\s]+Lv/g;
 	data.lv_name = [];
 	data.lv_value = [];
-
+	let skill_flag = 0;
+	const skill_regexp = /\[.+\]([^:]+) : ([^:]+) :/g;
+	data.skill_name = [];
+	data.skill_ex = [];
+	
 	$('#inputFile').on("change", function() {
 		var file = this.files[0];
 		var reader = new FileReader()
@@ -65,7 +71,13 @@
 					flag = FLAG_HPMP;
 				} else if(lineArr[i].indexOf('レベル・技能') > -1){
 					flag = FLAG_LV;
+				} else if(lineArr[i].indexOf('戦闘特技・値') > -1){
+					flag = FLAG_SKILL;
+				} else if(lineArr[i].indexOf('■装備■') > -1){
+                                        flag = FLAG_EQ;
 				}
+
+
 
 				if(flag == FLAG_INIT){
 					let match;
@@ -125,6 +137,20 @@
 							data.lv_value.push(match[2]);
 						}
 					}
+				} else if(flag == FLAG_SKILL){
+					if(skill_flag == 0){
+						skill_flag = 1;
+					} else if(skill_flag == 1){
+						skill_flag = 2;
+					} else {
+						let match;
+						console.log(lineArr[i]);
+						while ((match = skill_regexp.exec(lineArr[i]))!== null) {
+							data.skill_name.push(match[1]);
+							data.skill_ex.push(match[2]);
+						}
+						console.log(data.skill_name);
+					}
 				}
 
 
@@ -179,6 +205,11 @@ function generate_xml(data){
         content += '      <data name="技能・経験点">\n';
         for(var i=0 ; data.lv_name.length > i; i++){
 	content += '        <data name="'+ data.lv_name[i]+'">'+ data.lv_value[i] +'</data>\n';
+        }
+	content += '      </data>\n';
+       	content += '      <data name="戦闘特技">\n';
+	for(var i=0 ; data.skill_name.length > i; i++){
+	content += '        <data name="'+ data.skill_name[i]+'">'+ data.skill_ex[i] +'</data>\n';
         }
 	content += '      </data>\n';
         content += '    </data>\n';

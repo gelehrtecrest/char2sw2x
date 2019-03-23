@@ -20,6 +20,23 @@
 	data.resource.hp = 0;
 	data.resource.mp = 0;
 	data.resource.longing = 0;
+	const ability_regexp = /=合計=[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)/g;
+	const abilityplus_regexp = /ﾎﾞｰﾅｽ[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(\d+)/g;
+	data.ability = {};
+	data.abilityplus = {};
+	data.ability.dex = 0;
+	data.ability.agi = 0;
+	data.ability.str = 0;
+	data.ability.vit = 0;
+	data.ability.int = 0;
+	data.ability.mnd = 0;
+	data.abilityplus.dex = 0;
+	data.abilityplus.agi = 0;
+	data.abilityplus.str = 0;
+	data.abilityplus.vit = 0;
+	data.abilityplus.int = 0;
+	data.abilityplus.mnd = 0;
+
 
 	$('#inputFile').on("change", function() {
 		var file = this.files[0];
@@ -57,6 +74,25 @@
 					let matches = []
 					while ((match = longing_regexp.exec(lineArr[i]))!== null) {
 						data.resource.longing = match[1];
+					}
+				} else if(flag == FLAG_ABILITY){
+					let match;
+					let matches = []
+					while ((match = ability_regexp.exec(lineArr[i]))!== null) {
+						data.ability.dex = match[1];
+						data.ability.agi = match[2];
+						data.ability.str = match[3];
+						data.ability.vit = match[4];
+						data.ability.int = match[5];
+						data.ability.mnd = match[6];
+					}
+					while ((match = abilityplus_regexp.exec(lineArr[i]))!== null) {
+						data.abilityplus.dex = match[1];
+						data.abilityplus.agi = match[2];
+						data.abilityplus.str = match[3];
+						data.abilityplus.vit = match[4];
+						data.abilityplus.int = match[5];
+						data.abilityplus.mnd = match[6];
 					}
 				} else if(flag == FLAG_HPMP){
 					let match;
@@ -101,7 +137,23 @@ function generate_xml(data){
         content += '        <data name="生命抵抗">'+ data.resource.rehp +'</data>\n';
         content += '        <data name="精神抵抗">'+ data.resource.remp +'</data>\n';
         content += '      </data>\n';
-       content += '     </data>\n';
+        content += '      <data name="能力値">\n';
+        content += '        <data name="器用">'+ data.ability.dex +'</data>\n';
+        content += '        <data name="俊敏">'+ data.ability.agi +'</data>\n';
+        content += '        <data name="筋力">'+ data.ability.str +'</data>\n';
+        content += '        <data name="生命">'+ data.ability.vit +'</data>\n';
+        content += '        <data name="知力">'+ data.ability.int +'</data>\n';
+        content += '        <data name="精神">'+ data.ability.mnd +'</data>\n';
+        content += '      </data>\n';
+        content += '      <data name="能力値ボーナス">\n';
+        content += '        <data name="器用度ボーナス">'+ data.abilityplus.dex +'</data>\n';
+        content += '        <data name="俊敏度ボーナス">'+ data.abilityplus.agi +'</data>\n';
+        content += '        <data name="筋力ボーナス">'+ data.abilityplus.str +'</data>\n';
+        content += '        <data name="生命ボーナス">'+ data.abilityplus.vit +'</data>\n';
+        content += '        <data name="知力ボーナス">'+ data.abilityplus.int +'</data>\n';
+        content += '        <data name="精神ボーナス">'+ data.abilityplus.mnd +'</data>\n';
+        content += '      </data>\n';
+        content += '    </data>\n';
 	content += '  </data>\n';
 	//chat-palette
 	content += '  <chat-palette dicebot="SwordWorld2_0">SW2.0・SW2.5判定例\n';

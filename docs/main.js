@@ -7,6 +7,8 @@
 	const FLAG_LV = 5;
 	const FLAG_SKILL = 6;
 	const FLAG_WEAPON = 7;
+	const FLAG_EQUIP = 8;
+
 
 	var data = {};
 	data.common = {};
@@ -53,7 +55,18 @@
 	data.weapon_c = [];
 	data.weapon_add = [];
 	data.weapon_name = [];
-	
+	const armour_regexp =/鎧 ：+[\s]+[\d]*[\s]+[\d]*[\s]+[\d]*[\s]+[\d]*[\s]+(.*) \//g;
+	data.armour = {};
+	data.armour.name = "";
+	const shield_regexp =/盾 ：+[\s]+[\d]*[\s]+[\d]*[\s]+[\d]*[\s]+[\d]*[\s]+(.*) \//g;
+	data.shield = {};
+	data.shield.name = "";
+	const equip_regexp =/\= 合計 \=+[\s]+(\d*)[\s]+(\d*)[\s]+[\d]*[\s]+G/g;
+	data.equip = {};
+	data.equip.agi = "";
+	data.equip.vit = "";
+
+
 	$('#inputFile').on("change", function() {
 		var file = this.files[0];
 		var reader = new FileReader()
@@ -81,6 +94,8 @@
 					flag = FLAG_SKILL;
 				} else if(lineArr[i].indexOf('・武器') > -1){
                                         flag = FLAG_WEAPON;
+				} else if(lineArr[i].indexOf('・防具') > -1){
+                                        flag = FLAG_EQUIP;
 				}
 
 
@@ -158,7 +173,6 @@
 					}
 				} else if(flag == FLAG_WEAPON){
 					let match;
-					console.log(lineArr[i]);
 					while ((match = weapon_regexp.exec(lineArr[i]))!== null) {
 						data.weapon_hit.push(match[1]);
 						data.weapon_k.push(match[2]);
@@ -166,9 +180,19 @@
 						data.weapon_add.push(match[4]);
 						data.weapon_name.push(match[5]);
 					}
+				} else if(flag == FLAG_EQUIP){
+					let match;
+					while ((match = armour_regexp.exec(lineArr[i]))!== null) {
+						data.armour.name = match[1];
+					}
+					while ((match = shield_regexp.exec(lineArr[i]))!== null) {
+						data.shield.name = match[1];
+					}
+					while ((match = equip_regexp.exec(lineArr[i]))!== null) {
+						data.equip.agi = match[1];
+						data.equip.vit = match[2];
+					}
 				}
-
-
 			}
 			generate_xml(data);
 		}
@@ -236,7 +260,13 @@ function generate_xml(data){
 	content += '        <data name="武器'+ i +'ダメージボーナス">'+ data.weapon_add[i-1] + '</data>\n';
 	content += '      </data>\n';
 	}
-        content += '    </data>\n';
+        content += '      <data name="防具">\n';
+        content += '        <data name="鎧">'+ data.armour.name + '</data>\n';
+	content += '        <data name="盾">'+ data.shield.name + '</data>\n';
+	content += '        <data name="回避">'+ data.equip.agi + '</data>\n';
+	content += '        <data name="防御">'+ data.equip.vit + '</data>\n';
+	content += '      </data>\n';
+	content += '    </data>\n';
 	content += '  </data>\n';
 	//chat-palette
 	content += '  <chat-palette dicebot="SwordWorld2_0">SW2.0・SW2.5判定例\n';

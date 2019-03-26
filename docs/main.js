@@ -65,6 +65,27 @@
 	data.equip = {};
 	data.equip.agi = "";
 	data.equip.vit = "";
+        const head_regexp = / 頭 ：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.head = "";
+        const ear_regexp = / 耳 ：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.ear = "";
+        const face_regexp = / 顔 ：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.face = "";
+	const neck_regexp = / 首 ：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.neck = "";
+	const back_regexp = /背中：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.back = "";
+ 	const right_regexp = /右手：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.right = "";
+ 	const left_regexp = /左手：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.left = "";
+	const hip_regexp = / 腰 ：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.hip = "";
+	const leg_regexp = / 足 ：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.leg = "";
+	const other_regexp = / 他 ：[\d]*[\s]+(\S*)[\s]*\//g;
+	data.equip.other = "";
+	
 
 
 	$('#inputFile').on("change", function() {
@@ -192,6 +213,33 @@
 						data.equip.agi = match[1];
 						data.equip.vit = match[2];
 					}
+					while ((match = head_regexp.exec(lineArr[i]))!== null) {
+						data.equip.head = match[1];
+					}
+					while ((match = ear_regexp.exec(lineArr[i]))!== null) {
+						data.equip.ear = match[1];
+					}
+					while ((match = neck_regexp.exec(lineArr[i]))!== null) {
+						data.equip.neck = match[1];
+					}
+					while ((match = back_regexp.exec(lineArr[i]))!== null) {
+						data.equip.back = match[1];
+					}
+					while ((match = right_regexp.exec(lineArr[i]))!== null) {
+						data.equip.right = match[1];
+					}
+					while ((match = left_regexp.exec(lineArr[i]))!== null) {
+						data.equip.left = match[1];
+					}
+					while ((match = hip_regexp.exec(lineArr[i]))!== null) {
+						data.equip.hip = match[1];
+					}
+					while ((match = leg_regexp.exec(lineArr[i]))!== null) {
+						data.equip.leg = match[1];
+					}
+					while ((match = other_regexp.exec(lineArr[i]))!== null) {
+						data.equip.other = match[1];
+					}
 				}
 			}
 			generate_xml(data);
@@ -265,6 +313,18 @@ function generate_xml(data){
 	content += '        <data name="盾">'+ data.shield.name + '</data>\n';
 	content += '        <data name="回避">'+ data.equip.agi + '</data>\n';
 	content += '        <data name="防御">'+ data.equip.vit + '</data>\n';
+	content += '      </data>\n';
+	content += '      <data name="装飾品">\n';
+        content += '        <data name="頭">'+ data.equip.head + '</data>\n';
+	content += '        <data name="耳">'+ data.equip.ear + '</data>\n';
+	content += '        <data name="顔">'+ data.equip.face + '</data>\n';
+	content += '        <data name="首">'+ data.equip.neck + '</data>\n';
+	content += '        <data name="背中">'+ data.equip.back + '</data>\n';
+	content += '        <data name="右手">'+ data.equip.right + '</data>\n';
+	content += '        <data name="左手">'+ data.equip.left + '</data>\n';
+	content += '        <data name="腰">'+ data.equip.hip + '</data>\n';
+	content += '        <data name="足">'+ data.equip.leg + '</data>\n';
+	content += '        <data name="他">'+ data.equip.other + '</data>\n';
 	content += '      </data>\n';
 	content += '    </data>\n';
 	content += '  </data>\n';

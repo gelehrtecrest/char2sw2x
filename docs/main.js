@@ -8,7 +8,7 @@
 	const FLAG_SKILL = 6;
 	const FLAG_WEAPON = 7;
 	const FLAG_EQUIP = 8;
-
+	const FLAG_INVENTORY = 9;
 
 	var data = {};
 	data.common = {};
@@ -85,7 +85,10 @@
 	data.equip.leg = "";
 	const other_regexp = / 他 ：[\d]*[\s]+(\S*)[\s]*\//g;
 	data.equip.other = "";
-	
+	const inventory_regexp = /(\D+)[\s]+[\d]+[\s]+(\d+)[\s]+[\d]+/g;
+	data.inventory = {};
+	data.inventory.name = [];
+	data.inventory.count = [];
 
 
 	$('#inputFile').on("change", function() {
@@ -117,7 +120,10 @@
                                         flag = FLAG_WEAPON;
 				} else if(lineArr[i].indexOf('・防具') > -1){
                                         flag = FLAG_EQUIP;
+				} else if(lineArr[i].indexOf('■所持品■') > -1){
+                                        flag = FLAG_INVENTORY;
 				}
+
 
 
 
@@ -240,6 +246,14 @@
 					while ((match = other_regexp.exec(lineArr[i]))!== null) {
 						data.equip.other = match[1];
 					}
+				} else if(flag = FLAG_INVENTORY){
+					console.log(lineArr[i])
+					let match;
+					while ((match = inventory_regexp.exec(lineArr[i]))!== null) {
+						console.log(match);
+						data.inventory.name.push(match[1].trim());
+						data.inventory.count.push(match[2]);
+					}
 				}
 			}
 			generate_xml(data);
@@ -325,6 +339,11 @@ function generate_xml(data){
 	content += '        <data name="腰">'+ data.equip.hip + '</data>\n';
 	content += '        <data name="足">'+ data.equip.leg + '</data>\n';
 	content += '        <data name="他">'+ data.equip.other + '</data>\n';
+	content += '      </data>\n';
+	content += '      <data name="所持品">\n';
+	for(var i=0 ; data.inventory.name.length > i; i++){
+	content += '        <data name="'+ data.inventory.name[i]+'">'+ data.inventory.count[i] +'</data>\n';
+        }
 	content += '      </data>\n';
 	content += '    </data>\n';
 	content += '  </data>\n';

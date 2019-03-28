@@ -89,6 +89,11 @@
 	data.inventory = {};
 	data.inventory.name = [];
 	data.inventory.count = [];
+	const money_plus_regexp = /所持金[\s]+(\d*)/g;
+	const money_minus_regexp = /預金・借金[\s]+(\d*)/g;
+	data.money = {};
+	data.money.plus = 0;
+	data.money.minus = 0;
 
 
 	$('#inputFile').on("change", function() {
@@ -247,12 +252,16 @@
 						data.equip.other = match[1];
 					}
 				} else if(flag = FLAG_INVENTORY){
-					console.log(lineArr[i])
 					let match;
 					while ((match = inventory_regexp.exec(lineArr[i]))!== null) {
-						console.log(match);
 						data.inventory.name.push(match[1].trim());
 						data.inventory.count.push(match[2]);
+					}
+					while ((match = money_plus_regexp.exec(lineArr[i]))!== null) {
+						data.money.plus = match[1];
+					}
+					while ((match = money_minus_regexp.exec(lineArr[i]))!== null) {
+						data.money.minus = match[1];
 					}
 				}
 			}
@@ -344,6 +353,10 @@ function generate_xml(data){
 	for(var i=0 ; data.inventory.name.length > i; i++){
 	content += '        <data name="'+ data.inventory.name[i]+'">'+ data.inventory.count[i] +'</data>\n';
         }
+	content += '      </data>\n';
+	content += '      <data name="お金">\n';
+	content += '        <data name="所持金">'+ data.money.plus +'</data>\n';
+	content += '        <data name="預金・借金">'+ data.money.minus +'</data>\n';
 	content += '      </data>\n';
 	content += '    </data>\n';
 	content += '  </data>\n';

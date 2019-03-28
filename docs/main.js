@@ -89,7 +89,7 @@
 	data.equip.leg = "";
 	const other_regexp = / 他 ：[\d]*[\s]+(\S*)[\s]*\//g;
 	data.equip.other = "";
-	const inventory_regexp = /(\D+)[\s]+[\d]+[\s]+(\d+)[\s]+[\d]+/g;
+	const inventory_regexp = /(\S+)[\s]+[\d]+[\s]+(\d+)[\s]+[\d]+/g;
 	data.inventory = {};
 	data.inventory.name = [];
 	data.inventory.count = [];
@@ -98,8 +98,8 @@
 	data.money = {};
 	data.money.plus = 0;
 	data.money.minus = 0;
-	const lang_2_regexp = /(\S+)[\s]+(\S)+[\s]+(\S)+[\s]+／[\s]+(\S+)[\s]+(\S)+[\s]+(\S)+/g;
-	const lang_1_regexp = /(\S+)[\s]+(\S)+[\s]+(\S)+/g;
+	const lang_2_regexp = /(\S+)[\s]*(\S)+[\s]*(\S)+[\s]+／[\s]*(\S+)[\s]*(\S)+[\s]*(\S)+/g;
+	const lang_1_regexp = /(\S+)[\s]*(\S)+[\s]*(\S)+$/g;
 	data.lang = {}
 	data.lang.name = [];
 	data.lang.speak = [];

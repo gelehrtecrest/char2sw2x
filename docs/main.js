@@ -9,6 +9,7 @@
 	const FLAG_WEAPON = 7;
 	const FLAG_EQUIP = 8;
 	const FLAG_INVENTORY = 9;
+	const FLAG_LANG = 10;
 
 	var data = {};
 	data.common = {};
@@ -94,6 +95,12 @@
 	data.money = {};
 	data.money.plus = 0;
 	data.money.minus = 0;
+	const lang_2_regexp = /(\S+)[\s]+(\S)+[\s]+(\S)+[\s]+／[\s]+(\S+)[\s]+(\S)+[\s]+(\S)+/g;
+	const lang_1_regexp = /(\S+)[\s]+(\S)+[\s]+(\S)+/g;
+	data.lang = {}
+	data.lang.name = [];
+	data.lang.speak = [];
+	data.lang.read = [];
 
 
 	$('#inputFile').on("change", function() {
@@ -127,11 +134,9 @@
                                         flag = FLAG_EQUIP;
 				} else if(lineArr[i].indexOf('■所持品■') > -1){
                                         flag = FLAG_INVENTORY;
+				} else if(lineArr[i].indexOf('■言語■') > -1){
+                                        flag = FLAG_LANG;
 				}
-
-
-
-
 
 				if(flag == FLAG_INIT){
 					let match;
@@ -251,7 +256,7 @@
 					while ((match = other_regexp.exec(lineArr[i]))!== null) {
 						data.equip.other = match[1];
 					}
-				} else if(flag = FLAG_INVENTORY){
+				} else if(flag == FLAG_INVENTORY){
 					let match;
 					while ((match = inventory_regexp.exec(lineArr[i]))!== null) {
 						data.inventory.name.push(match[1].trim());
@@ -262,6 +267,23 @@
 					}
 					while ((match = money_minus_regexp.exec(lineArr[i]))!== null) {
 						data.money.minus = match[1];
+					}
+				} else if(flag == FLAG_LANG){
+					let match;
+					while ((match = lang_2_regexp.exec(lineArr[i]))!== null) {
+						data.lang.name.push(match[1]);
+						data.lang.speak.push(match[2]);
+						data.lang.read.push(match[3]);
+						data.lang.name.push(match[4]);
+						data.lang.speak.push(match[5]);
+						data.lang.read.push(match[6]);
+					}
+					while ((match = lang_1_regexp.exec(lineArr[i]))!== null) {
+						if (data.lang.name.indexOf(match[1]) == -1){
+							data.lang.name.push(match[1]);
+							data.lang.speak.push(match[2]);
+							data.lang.read.push(match[3]);
+						}
 					}
 				}
 			}
@@ -357,6 +379,17 @@ function generate_xml(data){
 	content += '      <data name="お金">\n';
 	content += '        <data name="所持金">'+ data.money.plus +'</data>\n';
 	content += '        <data name="預金・借金">'+ data.money.minus +'</data>\n';
+	content += '      </data>\n';
+	content += '      <data name="言語">\n';
+	for(var i=0 ; data.lang.name.length > i; i++){
+		if(data.lang.speak[i] == "○" && data.lang.read[i] == "○"){
+			content += '        <data name="'+ data.lang.name[i]+'">話読</data>\n';
+		} else if(data.lang.speak[i] == "○"){
+			content += '        <data name="'+ data.lang.name[i]+'">話</data>\n';
+		} else if(data.lang.read[i] == "○"){
+			content += '        <data name="'+ data.lang.name[i]+'">読</data>\n';
+		}
+        }
 	content += '      </data>\n';
 	content += '    </data>\n';
 	content += '  </data>\n';

@@ -12,6 +12,7 @@
 	const FLAG_LANG = 10;
 	const FLAG_MEMO = 11;
 	const FLAG_MEMO2 = 12;
+	const FLAG_OTHER_ABILITY = 13;
 
 
 	var data = {};
@@ -105,6 +106,8 @@
 	data.lang.speak = [];
 	data.lang.read = [];
 	data.memo = "\n";
+	const other_ability_regexp = /\[p\](.*) :[\s]+:/g;
+	data.other_ability = [];
 
 
 	$('#inputFile').on("change", function() {
@@ -142,7 +145,10 @@
                                         flag = FLAG_LANG;
 				} else if(lineArr[i].indexOf('メモ：') > -1){
                                         flag = FLAG_MEMO;
+				} else if(lineArr[i].indexOf('呪歌・練技・騎芸・賦術・鼓咆・占瞳') > -1){
+                                        flag = FLAG_OTHER_ABILITY;
 				}
+
 
 				if(flag == FLAG_INIT){
 					let match;
@@ -295,7 +301,13 @@
 					flag = FLAG_MEMO2;
 				} else if(flag == FLAG_MEMO2){
 					data.memo += lineArr[i] + '\n';
-				}
+				} else if(flag == FLAG_OTHER_ABILITY){
+					console.log(lineArr[i]);
+					let match;
+					while ((match = other_ability_regexp.exec(lineArr[i]))!== null) {
+						data.other_ability.push(match[1].trim());
+					}
+				}	
 
 			}
 			generate_xml(data);
@@ -350,9 +362,14 @@ function generate_xml(data){
 	content += '        <data name="'+ data.lv_name[i]+'">'+ data.lv_value[i] +'</data>\n';
         }
 	content += '      </data>\n';
-       	content += '      <data name="戦闘特技">\n';
+	content += '      <data name="戦闘特技">\n';
 	for(var i=0 ; data.skill_name.length > i; i++){
 	content += '        <data name="'+ data.skill_name[i]+'">'+ data.skill_ex[i] +'</data>\n';
+        }
+	content += '      </data>\n';
+	content += '      <data name="呪歌など">\n';
+	for(var i=0 ; data.other_ability.length > i; i++){
+	content += '        <data name="">'+ data.other_ability[i] +'</data>\n';
         }
 	content += '      </data>\n';
 	for(var i=1 ; data.weapon_name.length >= i; i++){

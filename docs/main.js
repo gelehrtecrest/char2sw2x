@@ -10,6 +10,9 @@
 	const FLAG_EQUIP = 8;
 	const FLAG_INVENTORY = 9;
 	const FLAG_LANG = 10;
+	const FLAG_MEMO = 11;
+	const FLAG_MEMO2 = 12;
+
 
 	var data = {};
 	data.common = {};
@@ -101,6 +104,7 @@
 	data.lang.name = [];
 	data.lang.speak = [];
 	data.lang.read = [];
+	data.memo = "\n";
 
 
 	$('#inputFile').on("change", function() {
@@ -136,6 +140,8 @@
                                         flag = FLAG_INVENTORY;
 				} else if(lineArr[i].indexOf('■言語■') > -1){
                                         flag = FLAG_LANG;
+				} else if(lineArr[i].indexOf('メモ：') > -1){
+                                        flag = FLAG_MEMO;
 				}
 
 				if(flag == FLAG_INIT){
@@ -285,7 +291,12 @@
 							data.lang.read.push(match[3]);
 						}
 					}
+				} else if(flag == FLAG_MEMO){
+					flag = FLAG_MEMO2;
+				} else if(flag == FLAG_MEMO2){
+					data.memo += lineArr[i] + '\n';
 				}
+
 			}
 			generate_xml(data);
 		}
@@ -390,6 +401,8 @@ function generate_xml(data){
 			content += '        <data name="'+ data.lang.name[i]+'">読</data>\n';
 		}
         }
+	content += '      </data>\n';
+	content += '      <data name="メモ" type="note">' + data.memo;
 	content += '      </data>\n';
 	content += '    </data>\n';
 	content += '  </data>\n';

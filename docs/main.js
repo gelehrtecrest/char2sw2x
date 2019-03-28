@@ -1,5 +1,6 @@
 ﻿$(function() {
 
+	const FLAG_SKIP = -1;
 	const FLAG_INIT = 1;
 	const FLAG_DATA = 2;
 	const FLAG_ABILITY = 3;
@@ -13,6 +14,7 @@
 	const FLAG_MEMO = 11;
 	const FLAG_MEMO2 = 12;
 	const FLAG_OTHER_ABILITY = 13;
+	const FLAG_HONOR = 14;
 
 
 	var data = {};
@@ -108,7 +110,10 @@
 	data.memo = "\n";
 	const other_ability_regexp = /\[p\](.*) :[\s]+:/g;
 	data.other_ability = [];
-
+	const honor_regexp = /^[\s]+(\d+)[\s]+(\S+)/g;
+	data.honor = {};
+	data.honor.name = [];
+	data.honor.num = [];
 
 	$('#inputFile').on("change", function() {
 		var file = this.files[0];
@@ -147,8 +152,11 @@
                                         flag = FLAG_MEMO;
 				} else if(lineArr[i].indexOf('呪歌・練技・騎芸・賦術・鼓咆・占瞳') > -1){
                                         flag = FLAG_OTHER_ABILITY;
+				} else if(lineArr[i].indexOf('■名誉アイテム■') > -1){
+                                        flag = FLAG_HONOR;
+				} else if(lineArr[i].indexOf('■その他') > -1){
+					flag = FLAG_SKIP;
 				}
-
 
 				if(flag == FLAG_INIT){
 					let match;
@@ -302,10 +310,15 @@
 				} else if(flag == FLAG_MEMO2){
 					data.memo += lineArr[i] + '\n';
 				} else if(flag == FLAG_OTHER_ABILITY){
-					console.log(lineArr[i]);
 					let match;
 					while ((match = other_ability_regexp.exec(lineArr[i]))!== null) {
 						data.other_ability.push(match[1].trim());
+					}
+				} else if(flag == FLAG_HONOR){
+					let match;
+					while ((match = honor_regexp.exec(lineArr[i]))!== null) {
+						data.honor.num.push(match[1]);
+						data.honor.name.push(match[2]);
 					}
 				}	
 
@@ -327,99 +340,104 @@ function generate_xml(data){
 	content += '      <data type="image" name="imageIdentifier"></data>\n';
 	content += '    </data>\n';
 	content += '    <data name="common">\n';
-	content += '      <data name="name">' + data.common.name + '</data>\n';
+	content += '      <data name="name">' + data.common.name.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
 	content += '      <data name="size">1</data>\n';
 	content += '    </data>\n';
         content += '    <data name="detail">\n'
 	content += '      <data name="リソース">\n';
-        content += '        <data type="numberResource" currentValue="'+ data.resource.hp + '" name="HP">'+ data.resource.hp +'</data>\n';
-        content += '        <data type="numberResource" currentValue="'+ data.resource.mp + '" name="MP">'+ data.resource.mp +'</data>\n';
+        content += '        <data type="numberResource" currentValue="'+ data.resource.hp.replace( '<', '＜' ).replace( '>', '＞' ) + '" name="HP">'+ data.resource.hp.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data type="numberResource" currentValue="'+ data.resource.mp.replace( '<', '＜' ).replace( '>', '＞' ) + '" name="MP">'+ data.resource.mp.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
         content += '        <data type="numberResource" currentValue="0" name="1ゾロ">100</data>\n';
-        content += '        <data type="numberResource" currentValue="'+ data.resource.longing +'" name="穢れ度">100</data>\n';
+        content += '        <data type="numberResource" currentValue="'+ data.resource.longing.replace( '<', '＜' ).replace( '>', '＞' ) +'" name="穢れ度">100</data>\n';
         content += '      </data>\n';
         content += '      <data name="抵抗">\n';
-        content += '        <data name="生命抵抗">'+ data.resource.rehp +'</data>\n';
-        content += '        <data name="精神抵抗">'+ data.resource.remp +'</data>\n';
+        content += '        <data name="生命抵抗">'+ data.resource.rehp.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="精神抵抗">'+ data.resource.remp.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
         content += '      </data>\n';
         content += '      <data name="能力値">\n';
-        content += '        <data name="器用">'+ data.ability.dex +'</data>\n';
-        content += '        <data name="俊敏">'+ data.ability.agi +'</data>\n';
-        content += '        <data name="筋力">'+ data.ability.str +'</data>\n';
-        content += '        <data name="生命">'+ data.ability.vit +'</data>\n';
-        content += '        <data name="知力">'+ data.ability.int +'</data>\n';
-        content += '        <data name="精神">'+ data.ability.mnd +'</data>\n';
+        content += '        <data name="器用">'+ data.ability.dex.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="俊敏">'+ data.ability.agi.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="筋力">'+ data.ability.str.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="生命">'+ data.ability.vit.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="知力">'+ data.ability.int.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="精神">'+ data.ability.mnd.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
         content += '      </data>\n';
         content += '      <data name="能力値ボーナス">\n';
-        content += '        <data name="器用度ボーナス">'+ data.abilityplus.dex +'</data>\n';
-        content += '        <data name="俊敏度ボーナス">'+ data.abilityplus.agi +'</data>\n';
-        content += '        <data name="筋力ボーナス">'+ data.abilityplus.str +'</data>\n';
-        content += '        <data name="生命ボーナス">'+ data.abilityplus.vit +'</data>\n';
-        content += '        <data name="知力ボーナス">'+ data.abilityplus.int +'</data>\n';
-        content += '        <data name="精神ボーナス">'+ data.abilityplus.mnd +'</data>\n';
+        content += '        <data name="器用度ボーナス">'+ data.abilityplus.dex.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="俊敏度ボーナス">'+ data.abilityplus.agi.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="筋力ボーナス">'+ data.abilityplus.str.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="生命ボーナス">'+ data.abilityplus.vit.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="知力ボーナス">'+ data.abilityplus.int.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        content += '        <data name="精神ボーナス">'+ data.abilityplus.mnd.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
         content += '      </data>\n';
         content += '      <data name="技能・経験点">\n';
         for(var i=0 ; data.lv_name.length > i; i++){
-	content += '        <data name="'+ data.lv_name[i]+'">'+ data.lv_value[i] +'</data>\n';
+	content += '        <data name="'+ data.lv_name[i].replace( '<', '＜' ).replace( '>', '＞' )+'">'+ data.lv_value[i].replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
         }
 	content += '      </data>\n';
 	content += '      <data name="戦闘特技">\n';
 	for(var i=0 ; data.skill_name.length > i; i++){
-	content += '        <data name="'+ data.skill_name[i]+'">'+ data.skill_ex[i] +'</data>\n';
+	content += '        <data name="'+ data.skill_name[i].replace( '<', '＜' ).replace( '>', '＞' )+'">'+ data.skill_ex[i].replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
         }
 	content += '      </data>\n';
 	content += '      <data name="呪歌など">\n';
 	for(var i=0 ; data.other_ability.length > i; i++){
-	content += '        <data name="">'+ data.other_ability[i] +'</data>\n';
+	content += '        <data name="">'+ data.other_ability[i].replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
         }
 	content += '      </data>\n';
 	for(var i=1 ; data.weapon_name.length >= i; i++){
 	content += '      <data name="武器'+ i +'">\n';
-        content += '        <data name="武器'+ i +'名前">'+ data.weapon_name[i-1] + '</data>\n';
-	content += '        <data name="武器'+ i +'命中">'+ data.weapon_hit[i-1] + '</data>\n';
-	content += '        <data name="武器'+ i +'威力">'+ data.weapon_k[i-1] + '</data>\n';
-	content += '        <data name="武器'+ i +'クリティカル">'+ data.weapon_c[i-1] + '</data>\n';
-	content += '        <data name="武器'+ i +'ダメージボーナス">'+ data.weapon_add[i-1] + '</data>\n';
+        content += '        <data name="武器'+ i +'名前">'+ data.weapon_name[i-1].replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="武器'+ i +'命中">'+ data.weapon_hit[i-1].replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="武器'+ i +'威力">'+ data.weapon_k[i-1].replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="武器'+ i +'クリティカル">'+ data.weapon_c[i-1].replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="武器'+ i +'ダメージボーナス">'+ data.weapon_add[i-1].replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
 	content += '      </data>\n';
 	}
         content += '      <data name="防具">\n';
-        content += '        <data name="鎧">'+ data.armour.name + '</data>\n';
-	content += '        <data name="盾">'+ data.shield.name + '</data>\n';
-	content += '        <data name="回避">'+ data.equip.agi + '</data>\n';
-	content += '        <data name="防御">'+ data.equip.vit + '</data>\n';
+        content += '        <data name="鎧">'+ data.armour.name.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="盾">'+ data.shield.name.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="回避">'+ data.equip.agi.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="防御">'+ data.equip.vit.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
 	content += '      </data>\n';
 	content += '      <data name="装飾品">\n';
-        content += '        <data name="頭">'+ data.equip.head + '</data>\n';
-	content += '        <data name="耳">'+ data.equip.ear + '</data>\n';
-	content += '        <data name="顔">'+ data.equip.face + '</data>\n';
-	content += '        <data name="首">'+ data.equip.neck + '</data>\n';
-	content += '        <data name="背中">'+ data.equip.back + '</data>\n';
-	content += '        <data name="右手">'+ data.equip.right + '</data>\n';
-	content += '        <data name="左手">'+ data.equip.left + '</data>\n';
-	content += '        <data name="腰">'+ data.equip.hip + '</data>\n';
-	content += '        <data name="足">'+ data.equip.leg + '</data>\n';
-	content += '        <data name="他">'+ data.equip.other + '</data>\n';
+        content += '        <data name="頭">'+ data.equip.head.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="耳">'+ data.equip.ear.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="顔">'+ data.equip.face.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="首">'+ data.equip.neck.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="背中">'+ data.equip.back.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="右手">'+ data.equip.right.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="左手">'+ data.equip.left.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="腰">'+ data.equip.hip.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="足">'+ data.equip.leg.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
+	content += '        <data name="他">'+ data.equip.other.replace( '<', '＜' ).replace( '>', '＞' ) + '</data>\n';
 	content += '      </data>\n';
 	content += '      <data name="所持品">\n';
 	for(var i=0 ; data.inventory.name.length > i; i++){
-	content += '        <data name="'+ data.inventory.name[i]+'">'+ data.inventory.count[i] +'</data>\n';
+	content += '        <data name="'+ data.inventory.name[i].replace( '<', '＜' ).replace( '>', '＞' )+'">'+ data.inventory.count[i].replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
         }
 	content += '      </data>\n';
 	content += '      <data name="お金">\n';
-	content += '        <data name="所持金">'+ data.money.plus +'</data>\n';
-	content += '        <data name="預金・借金">'+ data.money.minus +'</data>\n';
+	content += '        <data name="所持金">'+ data.money.plus.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+	content += '        <data name="預金・借金">'+ data.money.minus.replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
 	content += '      </data>\n';
 	content += '      <data name="言語">\n';
 	for(var i=0 ; data.lang.name.length > i; i++){
 		if(data.lang.speak[i] == "○" && data.lang.read[i] == "○"){
-			content += '        <data name="'+ data.lang.name[i]+'">話読</data>\n';
+			content += '        <data name="'+ data.lang.name[i].replace( '<', '＜' ).replace( '>', '＞' )+'">話読</data>\n';
 		} else if(data.lang.speak[i] == "○"){
-			content += '        <data name="'+ data.lang.name[i]+'">話</data>\n';
+			content += '        <data name="'+ data.lang.name[i].replace( '<', '＜' ).replace( '>', '＞' )+'">話</data>\n';
 		} else if(data.lang.read[i] == "○"){
-			content += '        <data name="'+ data.lang.name[i]+'">読</data>\n';
+			content += '        <data name="'+ data.lang.name[i].replace( '<', '＜' ).replace( '>', '＞' )+'">読</data>\n';
 		}
         }
 	content += '      </data>\n';
-	content += '      <data name="メモ" type="note">' + data.memo;
+	content += '      <data name="名誉アイテム">\n';
+	for(var i=0 ; data.honor.name.length > i; i++){
+		content += '        <data name="'+ data.honor.name[i].replace( '<', '＜' ).replace( '>', '＞' )+'">'+ data.honor.num[i].replace( '<', '＜' ).replace( '>', '＞' ) +'</data>\n';
+        }
+	content += '      </data>\n';
+	content += '      <data name="メモ" type="note">' + data.memo.replace( '<', '＜' ).replace( '>', '＞' );
 	content += '      </data>\n';
 	content += '    </data>\n';
 	content += '  </data>\n';
